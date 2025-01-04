@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Grade Distribution Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+        .container {
+            background-color: #f5f5f5;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        textarea {
+            width: 100%;
+            height: 150px;
+            margin: 10px 0;
+            font-family: monospace;
+            padding: 10px;
+        }
+        .checkbox-group {
+            margin: 15px 0;
+        }
+        .checkbox-group label {
+            margin-right: 15px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .results {
+            margin-top: 20px;
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+        }
+        .result-box {
+            background-color: white;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            text-align: center;
+        }
+        .result-box.inactive {
+            background-color: #eee;
+        }
+        .stats {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: white;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+        .grade-label {
+            font-weight: bold;
+            color: #2c5282;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Student Grade Distribution Calculator</h1>
+        
+        <div>
+            <label for="matrixInput">Enter student grade counts (one student per line):<br>
+            <small>Each line should contain 5 numbers showing how many A's, B's, C's, S's, and W's the student received</small></label>
+            <textarea id="matrixInput" placeholder="0 0 0 2 4  (This student got: 0 A's, 0 B's, 0 C's, 2 S's, 4 W's)
+2 0 0 0 0  (This student got: 2 A's, 0 B's, 0 C's, 0 S's, 0 W's)
+0 0 0 5 1  (This student got: 0 A's, 0 B's, 0 C's, 5 S's, 1 W's)"></textarea>
+        </div>
+
+        <div class="checkbox-group">
+            <label>Select grades to include in total:</label><br>
+            <label><input type="checkbox" checked id="col0"> A Passes</label>
+            <label><input type="checkbox" checked id="col1"> B Passes</label>
+            <label><input type="checkbox" checked id="col2"> C Passes</label>
+            <label><input type="checkbox" checked id="col3"> S Passes</label>
+            <label><input type="checkbox" checked id="col4"> W Passes</label>
+        </div>
+
+        <button onclick="calculateDistribution()">Calculate Distribution</button>
+
+        <div class="stats" id="studentCount"></div>
+        <div id="results" class="results"></div>
+    </div>
+
+    <script>
+        function calculateDistribution() {
+            // Get the input text and split into rows
+            const input = document.getElementById('matrixInput').value;
+            const rows = input.trim().split('\n');
+            
+            // Update student count
+            document.getElementById('studentCount').innerHTML = `
+                <strong>Total number of students:</strong> ${rows.length}
+            `;
+            
+            // Convert rows to number matrix
+            const matrix = rows.map(row => 
+                row.trim().split(/\s+/).map(num => parseInt(num, 10))
+            );
+
+            // Validate matrix
+            if (!matrix.every(row => row.length === 5)) {
+                alert('Each row must contain exactly 5 numbers (count of A, B, C, S, W passes)');
+                return;
+            }
+
+            // Get selected grade types
+            const selectedGrades = Array.from({length: 5}, (_, i) => 
+                document.getElementById(`col${i}`).checked
+            );
+
+            // Calculate totals
+            const totals = Array(5).fill(0);
+            matrix.forEach(row => {
+                row.forEach((num, colIndex) => {
+                    if (selectedGrades[colIndex]) {
+                        totals[colIndex] += num;
+                    }
+                });
+            });
+
+            // Calculate averages per student
+            const averages = totals.map(total => (total / rows.length).toFixed(2));
+
+            // Display results
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '';
+            
+            const grades = ['A', 'B', 'C', 'S', 'W'];
+            
+            totals.forEach((total, index) => {
+                const box = document.createElement('div');
+                box.className = `result-box ${selectedGrades[index] ? '' : 'inactive'}`;
+                box.innerHTML = `
+                    <span class="grade-label">${grades[index]} Passes</span><br>
+                    ${selectedGrades[index] ? `
+                        Total: ${total}<br>
+                        Avg per student: ${averages[index]}
+                    ` : '-'}
+                `;
+                resultsDiv.appendChild(box);
+            });
+        }
+    </script>
+</body>
+</html>
