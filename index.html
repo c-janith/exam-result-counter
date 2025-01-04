@@ -5,89 +5,183 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student Grade Distribution Calculator</title>
     <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
         body {
             font-family: Arial, sans-serif;
-            max-width: 800px;
-            margin: 20px auto;
-            padding: 0 20px;
+            line-height: 1.6;
+            padding: 16px;
+            background-color: #f0f2f5;
         }
+
         .container {
-            background-color: #f5f5f5;
-            padding: 20px;
-            border-radius: 8px;
-        }
-        textarea {
-            width: 100%;
-            height: 150px;
-            margin: 10px 0;
-            font-family: monospace;
-            padding: 10px;
-        }
-        .checkbox-group {
-            margin: 15px 0;
-        }
-        .checkbox-group label {
-            margin-right: 15px;
-        }
-        button {
-            background-color: #4CAF50;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #45a049;
-        }
-        .results {
-            margin-top: 20px;
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 10px;
-        }
-        .result-box {
+            max-width: 1200px;
+            margin: 0 auto;
             background-color: white;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            font-size: clamp(1.5rem, 4vw, 2rem);
+            color: #1a365d;
+            margin-bottom: 1rem;
             text-align: center;
         }
-        .result-box.inactive {
-            background-color: #eee;
+
+        .input-section {
+            margin: 20px 0;
         }
-        .stats {
-            margin-top: 20px;
+
+        .input-label {
+            display: block;
+            margin-bottom: 10px;
+            font-size: clamp(0.875rem, 2vw, 1rem);
+        }
+
+        .helper-text {
+            display: block;
+            color: #666;
+            font-size: clamp(0.75rem, 1.5vw, 0.875rem);
+            margin-bottom: 8px;
+        }
+
+        textarea {
+            width: 100%;
+            height: clamp(120px, 20vh, 200px);
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: clamp(0.875rem, 2vw, 1rem);
+            resize: vertical;
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 20px 0;
             padding: 15px;
-            background-color: white;
-            border-radius: 4px;
-            border: 1px solid #ddd;
+            background-color: #f8fafc;
+            border-radius: 8px;
         }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: clamp(0.875rem, 2vw, 1rem);
+            padding: 8px;
+            background-color: white;
+            border-radius: 6px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+
+        button {
+            width: 100%;
+            max-width: 300px;
+            margin: 20px auto;
+            display: block;
+            padding: 12px 24px;
+            background-color: #3182ce;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: clamp(0.875rem, 2vw, 1rem);
+            transition: background-color 0.2s;
+        }
+
+        button:hover {
+            background-color: #2c5282;
+        }
+
+        .stats {
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #f8fafc;
+            border-radius: 8px;
+            font-size: clamp(0.875rem, 2vw, 1rem);
+            text-align: center;
+        }
+
+        .results {
+            display: grid;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        /* Mobile: 1 column */
+        @media (max-width: 599px) {
+            .results {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Tablet: 2 columns */
+        @media (min-width: 600px) and (max-width: 899px) {
+            .results {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* Desktop: 5 columns */
+        @media (min-width: 900px) {
+            .results {
+                grid-template-columns: repeat(5, 1fr);
+            }
+        }
+
+        .result-box {
+            background-color: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            text-align: center;
+        }
+
+        .result-box.inactive {
+            background-color: #f1f5f9;
+        }
+
         .grade-label {
             font-weight: bold;
             color: #2c5282;
+            font-size: clamp(1rem, 2.5vw, 1.25rem);
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .grade-stats {
+            font-size: clamp(0.875rem, 2vw, 1rem);
+            line-height: 1.8;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Student Grade Distribution Calculator</h1>
+        <h1>Grade Distribution Calculator</h1>
         
-        <div>
-            <label for="matrixInput">Enter student grade counts (one student per line):<br>
-            <small>Each line should contain 5 numbers showing how many A's, B's, C's, S's, and W's the student received</small></label>
-            <textarea id="matrixInput" placeholder="0 0 0 2 4  (This student got: 0 A's, 0 B's, 0 C's, 2 S's, 4 W's)
-2 0 0 0 0  (This student got: 2 A's, 0 B's, 0 C's, 0 S's, 0 W's)
-0 0 0 5 1  (This student got: 0 A's, 0 B's, 0 C's, 5 S's, 1 W's)"></textarea>
+        <div class="input-section">
+            <label class="input-label" for="matrixInput">Enter student grade counts:</label>
+            <span class="helper-text">Each line represents one student's grade counts (A B C S W)</span>
+            <textarea id="matrixInput" placeholder="0 0 0 2 4  (0 A's, 0 B's, 0 C's, 2 S's, 4 W's)
+2 0 0 0 0  (2 A's, 0 B's, 0 C's, 0 S's, 0 W's)
+0 0 0 5 1  (0 A's, 0 B's, 0 C's, 5 S's, 1 W's)"></textarea>
         </div>
 
         <div class="checkbox-group">
-            <label>Select grades to include in total:</label><br>
-            <label><input type="checkbox" checked id="col0"> A Passes</label>
-            <label><input type="checkbox" checked id="col1"> B Passes</label>
-            <label><input type="checkbox" checked id="col2"> C Passes</label>
-            <label><input type="checkbox" checked id="col3"> S Passes</label>
-            <label><input type="checkbox" checked id="col4"> W Passes</label>
+            <label class="checkbox-label"><input type="checkbox" checked id="col0">A Passes</label>
+            <label class="checkbox-label"><input type="checkbox" checked id="col1">B Passes</label>
+            <label class="checkbox-label"><input type="checkbox" checked id="col2">C Passes</label>
+            <label class="checkbox-label"><input type="checkbox" checked id="col3">S Passes</label>
+            <label class="checkbox-label"><input type="checkbox" checked id="col4">W Passes</label>
         </div>
 
         <button onclick="calculateDistribution()">Calculate Distribution</button>
@@ -98,32 +192,26 @@
 
     <script>
         function calculateDistribution() {
-            // Get the input text and split into rows
             const input = document.getElementById('matrixInput').value;
             const rows = input.trim().split('\n');
             
-            // Update student count
             document.getElementById('studentCount').innerHTML = `
-                <strong>Total number of students:</strong> ${rows.length}
+                <strong>Total Students:</strong> ${rows.length}
             `;
             
-            // Convert rows to number matrix
             const matrix = rows.map(row => 
                 row.trim().split(/\s+/).map(num => parseInt(num, 10))
             );
 
-            // Validate matrix
             if (!matrix.every(row => row.length === 5)) {
                 alert('Each row must contain exactly 5 numbers (count of A, B, C, S, W passes)');
                 return;
             }
 
-            // Get selected grade types
             const selectedGrades = Array.from({length: 5}, (_, i) => 
                 document.getElementById(`col${i}`).checked
             );
 
-            // Calculate totals
             const totals = Array(5).fill(0);
             matrix.forEach(row => {
                 row.forEach((num, colIndex) => {
@@ -133,10 +221,11 @@
                 });
             });
 
-            // Calculate averages per student
             const averages = totals.map(total => (total / rows.length).toFixed(2));
+            const percentages = totals.map(total => 
+                ((total / (rows.length * 5)) * 100).toFixed(1)
+            );
 
-            // Display results
             const resultsDiv = document.getElementById('results');
             resultsDiv.innerHTML = '';
             
@@ -146,11 +235,14 @@
                 const box = document.createElement('div');
                 box.className = `result-box ${selectedGrades[index] ? '' : 'inactive'}`;
                 box.innerHTML = `
-                    <span class="grade-label">${grades[index]} Passes</span><br>
-                    ${selectedGrades[index] ? `
-                        Total: ${total}<br>
-                        Avg per student: ${averages[index]}
-                    ` : '-'}
+                    <span class="grade-label">${grades[index]} Passes</span>
+                    <div class="grade-stats">
+                        ${selectedGrades[index] ? `
+                            Total: ${total}<br>
+                            Per Student: ${averages[index]}<br>
+                            Distribution: ${percentages[index]}%
+                        ` : '-'}
+                    </div>
                 `;
                 resultsDiv.appendChild(box);
             });
